@@ -1,0 +1,7 @@
+<VirtualHost *:80>
+    ServerName www.ganeti.org
+    ServerAlias ganeti.org
+
+    RewriteEngine on
+    RewriteRule ^/?(.*)    http://code.google.com/p/ganeti/$1 [R]
+</VirtualHost>

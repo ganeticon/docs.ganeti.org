@@ -1,0 +1,33 @@
+#!/bin/sh
+
+mkdir -m 0755 -p /srv/git
+
+# apache setup
+a2enmod rewrite
+a2dissite default default-ssl
+a2ensite gitweb
+a2ensite docs
+
+invoke-rc.d apache2 reload
+
+# git server setup
+export DEBIAN_FRONTEND=noninteractive
+update-inetd --remove git
+update-inetd --add "git stream tcp nowait nobody  /usr/bin/git git daemon --inetd --verbose --export-all --base-path=/srv/git /srv/git"
+
+# force symlink generation
+for fname in gitweb.css gitweb.js; do
+  tgt="/srv/git/$fname"
+  if [ ! -L "$tgt" -o ! -f "$tgt" ]; then
+    # note: newer git(web) puts things in static/, older directly
+    # under gitweb/
+    ln -sf "/usr/share/gitweb/static/$fname" "$tgt"
+  fi
+done
+
+if [ ! -L "/srv/git/favicon.ico" ]; then
+  ln -sf "git-favicon.png" "/srv/git/favicon.png"
+fi
+
+# Generate docs.ganeti.org
+make -C /srv/docs-src publish

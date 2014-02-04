@@ -1,0 +1,12 @@
+<VirtualHost *:80>
+    ServerName downloads.ganeti.org
+
+    DocumentRoot /srv/downloads
+
+    <Directory /srv/downloads>
+        Options Indexes
+        AllowOverride None
+        Order allow,deny
+        Allow from all
+    </Directory>
+</VirtualHost>

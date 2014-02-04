@@ -1,0 +1,36 @@
+#!/bin/sh
+
+set -ex
+
+export DEBIAN_FRONTEND=noninteractive
+
+# if on squeeze (and only there) we use backports
+apt-get install -y lsb-release
+if [ "$( lsb_release --codename | awk '{print $2;}' )" = "squeeze"  ] ; then
+  echo "Running on squeeze, using backports for some packages."
+  mkdir -p /etc/apt/sources.list.d
+  echo "deb http://backports.debian.org/debian-backports squeeze-backports main" \
+    > /etc/apt/sources.list.d/squeeze-backports.list
+  apt-get update
+  BACKPORTS="-t squeeze-backports"
+else
+  BACKPORTS=""
+fi
+
+# misc packages
+apt-get install -y vim less rsync highlight
+
+# apache packages
+apt-get install -y apache2-mpm-prefork
+
+# git packages, from packages while we're running squeeze
+apt-get install -y $BACKPORTS \
+  git-core gitweb git-doc git-svn git-email
+apt-get install -y openbsd-inetd
+
+# Just to make sure we the tools we need
+apt-get install -y make
+
+# sphinx for documentation generation
+apt-get install -y $BACKPORTS \
+  python-sphinx

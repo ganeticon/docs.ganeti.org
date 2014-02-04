@@ -1,0 +1,45 @@
+<VirtualHost *:80>
+    ServerName docs.ganeti.org
+    ServerAlias doc.ganeti.org
+
+    DocumentRoot /srv/docs/
+
+    <Directory />
+        Options FollowSymLinks
+        AllowOverride None
+    </Directory>
+
+    <Directory /srv/docs/>
+        Options Indexes FollowSymLinks
+        AllowOverride None
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+    ScriptAlias /cgi-bin/ /usr/lib/cgi-bin/
+    <Directory "/usr/lib/cgi-bin">
+        AllowOverride None
+        Options +ExecCGI -MultiViews +SymLinksIfOwnerMatch
+        Order allow,deny
+        Allow from all
+    </Directory>
+
+    ErrorLog /var/log/apache2/error.log
+
+    # Possible values include: debug, info, notice, warn, error, crit,
+    # alert, emerg.
+    LogLevel warn
+
+    CustomLog /var/log/apache2/access.log combined
+
+    SetEnv  GITWEB_CONFIG   /etc/gitweb.conf
+
+    RewriteEngine on
+    # make sure that we use docs.ganeti.org (doc.ganeti.org is an
+    # alias for it, idea taken from doc.python.org->docs.python.org
+    # redirect)
+    RewriteCond %{HTTP_HOST}   !^docs\.ganeti\.org [NC]
+    RewriteCond %{HTTP_HOST}   !^$
+    RewriteRule ^/?(.*)         http://docs.ganeti.org/$1 [L,R,NE]
+
+</VirtualHost>
