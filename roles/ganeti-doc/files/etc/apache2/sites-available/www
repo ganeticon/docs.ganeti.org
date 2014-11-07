@@ -2,6 +2,12 @@
     ServerName www.ganeti.org
     ServerAlias ganeti.org
 
-    RewriteEngine on
-    RewriteRule ^/?(.*)    http://code.google.com/p/ganeti/$1 [R]
+    DocumentRoot /srv/www
+
+    <Directory /srv/www>
+        Options Indexes
+        AllowOverride None
+        Order allow,deny
+        Allow from all
+    </Directory>
 </VirtualHost>
